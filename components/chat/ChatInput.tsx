@@ -1,18 +1,41 @@
-import { useState, KeyboardEvent } from "react";
+import { useState, KeyboardEvent, useEffect } from "react";
 import { Send } from "lucide-react";
 
 interface ChatInputProps {
     onSendMessage: (content: string) => void;
+    onTyping?: (isTyping: boolean) => void;
     disabled?: boolean;
 }
 
-export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
+export function ChatInput({ onSendMessage, onTyping, disabled }: ChatInputProps) {
     const [input, setInput] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (isTyping) {
+                setIsTyping(false);
+                onTyping?.(false);
+            }
+        }, 1000);
+
+        return () => clearTimeout(timeout);
+    }, [input, isTyping, onTyping]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput(e.target.value);
+        if (!isTyping) {
+            setIsTyping(true);
+            onTyping?.(true);
+        }
+    };
 
     const handleSend = () => {
         if (input.trim()) {
             onSendMessage(input);
             setInput("");
+            setIsTyping(false);
+            onTyping?.(false);
         }
     };
 
@@ -29,7 +52,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
                 <input
                     type="text"
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={handleChange}
                     onKeyDown={handleKeyDown}
                     placeholder="Type a message..."
                     className="flex-1 rounded-md border border-input bg-transparent px-3 py-2 text-base md:text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
