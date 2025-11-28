@@ -7,15 +7,14 @@ import remarkGfm from "remark-gfm";
 interface MessageListProps {
     messages: Message[];
     currentUsername: string;
-    typingUsers?: string[];
 }
 
-export const MessageList = memo(function MessageList({ messages, currentUsername, typingUsers = [] }: MessageListProps) {
+export const MessageList = memo(function MessageList({ messages, currentUsername }: MessageListProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages, typingUsers]);
+    }, [messages]);
 
     return (
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -70,13 +69,6 @@ export const MessageList = memo(function MessageList({ messages, currentUsername
                     </div>
                 );
             })}
-
-            {/* Typing Indicator */}
-            {typingUsers.length > 0 && (
-                <div className="text-xs text-muted-foreground italic px-4 animate-pulse">
-                    {typingUsers.join(", ")} {typingUsers.length === 1 ? "is" : "are"} typing...
-                </div>
-            )}
 
             <div ref={bottomRef} />
         </div>

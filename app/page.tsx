@@ -9,11 +9,10 @@ export default function Home() {
   const { messages, sendMessage, username, onlineCount, typingUsers, sendTypingEvent } = useChat();
 
   return (
-    <ChatLayout onlineCount={onlineCount}>
+    <ChatLayout onlineCount={onlineCount} typingUsers={typingUsers}>
       <MessageList
         messages={messages}
         currentUsername={username}
-        typingUsers={typingUsers}
       />
       <ChatInput
         onSendMessage={sendMessage}
